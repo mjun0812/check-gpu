@@ -1,6 +1,22 @@
 #!/bin/bash
 
-SCRIPT_HOME=$(dirname $0)
+read_parent_dir() {
+    local cwd="$(pwd)"
+    local path="$1"
+    while [ -n "$path" ]; do
+        if [ "${path%/*}" != "$path" ]; then
+            # $path に含まれる最後の
+            # "/" から後ろを削除したパスにcd
+            cd "${path%/*}"
+        fi
+        local name="${path##*/}"
+        path="$(readlink "$name" || true)"
+    done
+    pwd
+    cd "$cwd"
+}
+
+SCRIPT_HOME="$(read_parent_dir $0)"
 
 # GPU Info used prettytable.sh.
 # It works even if it is not existed,

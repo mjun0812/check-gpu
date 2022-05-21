@@ -47,6 +47,14 @@ hoge.local
 ./check_gpu.sh
 ```
 
+このスクリプトは，シンボリックリンクを再帰的に解決できるので，
+PATH が通っている場所にシンボリックリンクを貼れば
+どこからでも使えるようになります．
+
+```bash
+ln -s path/to/check_gpu.sh ~/.bin/check-gpu
+```
+
 ## Info
 
 GPU の表示を綺麗にするために，同梱している
