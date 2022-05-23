@@ -4,5 +4,5 @@
 
 !.gitignore
 !check_gpu.sh
-!prettyprint.sh
+!prettytable.sh
 !README.md

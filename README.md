@@ -1,7 +1,10 @@
-# Check Remote CUDA Server
+# Check Remote GPU Server
 
 リモートにある GPU サーバの使用率を確認するスクリプトです．  
 同時に CPU と RAM の情報も見ることが出来ます．
+
+This script checks the utilization of remote GPU servers.  
+CPU and RAM information can be viewed at the same time.
 
 - example
 
@@ -27,6 +30,9 @@ CPU: AMD EPYC 7452 32-Core Processor, RAM: 1007GB
 まずは，確認したいサーバーの host 名を`host.txt`に書きます．  
 1 行ごとにホスト名を書きます．
 
+First, write the host name of the server you wish to check in the `host.txt` file.  
+Write the host name on each line.
+
 ```bash
 touch host.txt
 vim host.txt
@@ -39,9 +45,11 @@ hoge.local
 #fuga
 ```
 
-`host.txt`は`#`を用いたコメントアウトにも対応しています．
-
+`host.txt`は`#`を用いたコメントアウトにも対応しています．  
 `host.txt`を書いたら，スクリプト本体を実行します．
+
+The `host.txt` file can be commented out using `#`.  
+After writing `host.txt`, run the script.
 
 ```bash
 ./check_gpu.sh
@@ -51,8 +59,12 @@ hoge.local
 PATH が通っている場所にシンボリックリンクを貼れば
 どこからでも使えるようになります．
 
+This script can resolve symbolic links recursively.
+If you put a symbolic link to a PATH location, you can use it from anywhere.
+
 ```bash
 ln -s path/to/check_gpu.sh ~/.bin/check-gpu
+check-gpu
 ```
 
 ## Info
@@ -63,3 +75,9 @@ GPU の表示を綺麗にするために，同梱している
 
 この`prettytable.sh`がない場合でも動作するようにしているので，
 スクリプト自体はコピペで使用することが出来ます．
+
+## References
+
+<https://github.com/tmyoda/bash-cluster-smi>
+
+<https://tmyoda.hatenablog.com/entry/20211030/1635587862>
