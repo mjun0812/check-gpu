@@ -33,7 +33,8 @@ fi
 GPU_CMD="nvidia-smi --query-gpu=index,name,memory.free,memory.used,memory.total --format=csv,noheader"
 CPU_CMD="cat /proc/cpuinfo | grep model\ name | uniq"
 RAM_CMD="free -g -t | grep Mem"
-CMD="'${GPU_CMD}; ${CPU_CMD}; ${RAM_CMD}; echo ---;'"
+CMD="${GPU_CMD}; ${CPU_CMD}; ${RAM_CMD};"
+# CMD="'${GPU_CMD}; ${CPU_CMD}; ${RAM_CMD}; echo ---;'"
 
 # Get target host 
 HOST_FILE=${SCRIPT_HOME}/hosts.txt
@@ -45,19 +46,25 @@ do
     fi
 done
 
-eval `ssh-agent` > /dev/null
-ssh-add ~/.ssh/id_rsa
-
 # Get Info throw ssh
-ALL_RES=`for host in "${HOSTS[@]}"; do echo $host; done | xargs -P 8 -I{} -t bash -c "ssh -A -oStrictHostKeyChecking=no {} $CMD" 2> /dev/null`
-
-# Split Info par host
+eval `ssh-agent` > /dev/null
 RES=()
 for i in {1..$#HOSTS}
 do
-    local AWK_CMD='{len=split($0, arr, "(^|\\n)---(\\n|$)")}END{print arr['$i']}'
-    RES[$i]=`echo "${ALL_RES}" | awk -vRS='\0' "${AWK_CMD}"`
+    RES[$i]=`ssh -oStrictHostKeyChecking=no ${HOSTS[$i]} $CMD &`
 done
+
+# # Get Info throw ssh
+# eval `ssh-agent` > /dev/null
+# ssh-add ~/.ssh/id_rsa
+# ALL_RES=`for host in "${HOSTS[@]}"; do echo $host; done | xargs -P 8 -I{} -t bash -c "ssh -A -oStrictHostKeyChecking=no {} $CMD" 2> /dev/null`
+# # Split Info par host
+# RES=()
+# for i in {1..$#HOSTS}
+# do
+#     local AWK_CMD='{len=split($0, arr, "(^|\\n)---(\\n|$)")}END{print arr['$i']}'
+#     RES[$i]=`echo "${ALL_RES}" | awk -vRS='\0' "${AWK_CMD}"`
+# done
 
 for i in {1..$#RES}
 do
