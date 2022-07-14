@@ -1,16 +1,16 @@
-#!/bin/bash
+#!/bin/zsh
 
 read_parent_dir() {
     local cwd="$(pwd)"
-    local path="$1"
-    while [ -n "$path" ]; do
-        if [ "${path%/*}" != "$path" ]; then
-            # $path に含まれる最後の
+    local target="$1"
+    while [ -n "$target" ]; do
+        if [ "${target%/*}" != "$target" ]; then
+            # $target に含まれる最後の
             # "/" から後ろを削除したパスにcd
-            cd "${path%/*}"
+            cd "${target%/*}"
         fi
-        local name="${path##*/}"
-        path="$(readlink "$name" || true)"
+        local name="${target##*/}"
+        target="$(readlink "$name" || true)"
     done
     pwd
     cd "$cwd"
@@ -34,7 +34,7 @@ eval `ssh-agent` > /dev/null
 GPU_CMD="nvidia-smi --query-gpu=index,name,memory.free,memory.used,memory.total --format=csv,noheader"
 CPU_CMD="cat /proc/cpuinfo | grep model\ name | uniq"
 RAM_CMD="free -g -t | grep Mem"
-CMD="${GPU_CMD}; ${CPU_CMD}; ${RAM_CMD}"
+CMD="'${GPU_CMD}; ${CPU_CMD}; ${RAM_CMD}; echo ---;'"
 
 # Get target host 
 HOST_FILE=${SCRIPT_HOME}/hosts.txt
@@ -47,17 +47,17 @@ do
 done
 
 # Get Info throw ssh
+ALL_RES=`echo $HOSTS | xargs -P 8 -n1 -I{} bash -c "ssh -oStrictHostKeyChecking=no {} $CMD" 2> /dev/null`
+
+# Split Info par host
 RES=()
-for i in "${!HOSTS[@]}"
+for i in {1..$#HOSTS}
 do
-    RES[$i]="$(ssh -oStrictHostKeyChecking=no ${HOSTS[$i]} $CMD &)"
+    local AWK_CMD='{len=split($0, arr, "(^|\\n)---(\\n|$)")}END{print arr['$i']}'
+    RES[$i]=`echo "${ALL_RES}" | awk -vRS='\0' "${AWK_CMD}"`
 done
 
-# Avobe ssh process is background.
-# So, have to wait.
-wait
-
-for i in "${!RES[@]}"
+for i in {1..$#RES}
 do
     # res format string is
     # (GPU INFO)
