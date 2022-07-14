@@ -28,7 +28,6 @@ if [ -e ${SCRIPT_HOME}/prettytable.sh ]; then
     PRETTY_PRINT=1
 fi
 
-eval `ssh-agent` > /dev/null
 
 # Commands to ssh server
 GPU_CMD="nvidia-smi --query-gpu=index,name,memory.free,memory.used,memory.total --format=csv,noheader"
@@ -46,8 +45,11 @@ do
     fi
 done
 
+eval `ssh-agent` > /dev/null
+ssh-add ~/.ssh/id_rsa
+
 # Get Info throw ssh
-ALL_RES=`echo $HOSTS | xargs -P 8 -n1 -I{} bash -c "ssh -oStrictHostKeyChecking=no {} $CMD" 2> /dev/null`
+ALL_RES=`for host in "${HOSTS[@]}"; do echo $host; done | xargs -P 8 -I{} -t bash -c "ssh -A -oStrictHostKeyChecking=no {} $CMD" 2> /dev/null`
 
 # Split Info par host
 RES=()
