@@ -51,7 +51,7 @@ eval `ssh-agent` > /dev/null
 RES=()
 for i in {1..$#HOSTS}
 do
-    RES[$i]=`ssh -oStrictHostKeyChecking=no ${HOSTS[$i]} $CMD &`
+    RES[$i]=`ssh -oStrictHostKeyChecking=no ${HOSTS[$i]} $CMD 2> /dev/null &`
 done
 
 # # Get Info throw ssh
