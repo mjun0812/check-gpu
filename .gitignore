@@ -6,3 +6,5 @@
 !check_gpu.sh
 !prettytable.sh
 !README.md
+!gpu_process.sh
+!send_gpu_script.sh

@@ -46,10 +46,19 @@ hoge.local
 ```
 
 `host.txt`は`#`を用いたコメントアウトにも対応しています．  
-`host.txt`を書いたら，スクリプト本体を実行します．
-
 The `host.txt` file can be commented out using `#`.  
-After writing `host.txt`, run the script.
+
+次に，プロセス確認用のスクリプトをサーバーに送信します．  
+各サーバーのホームディレクトリにスクリプトが配置されます．  
+Next, `gpu_process.sh` script is sent to the servers to confirm the process.  
+The script is placed in the home directory of each server.
+
+```bash
+./send_gpu_script.sh
+```
+
+最後にスクリプト本体を実行します．  
+Then, run the script.
 
 ```bash
 ./check_gpu.sh
